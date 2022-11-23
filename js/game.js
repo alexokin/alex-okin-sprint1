@@ -8,6 +8,7 @@
 // gBoard – A Matrix containing cell objects: Each cell: { minesAroundCount: 4, isShown: false, isMine: false, isMarked: true }
 
 const MINE = '💣'
+const FLAG = '🚩'
 
 
 var gGame = { 
@@ -98,7 +99,7 @@ function renderBoard(mat, selector) {
             const cell = ''
             const className = `cell cell-${i}-${j}`
 
-            strHTML += `<td class="${className}" onclick="cellClicked(this, ${i}, ${j})">${cell}</td>`
+            strHTML += `<td class="${className}" onclick="cellClicked(this, ${i}, ${j})" oncontextmenu='markCell(this, event, ${i}, ${j})'>${cell}</td>`
         }
         strHTML += '</tr>'
     }
@@ -135,7 +136,8 @@ function countMinesAround(cellI, cellJ, board) {
 // Called when a cell (td) is clicked
 function cellClicked(elCell, i, j) {
     var cell = gBoard[i][j]
-    if(cell.isShown === false) {
+    if (cell.isMarked) return
+    if (cell.isShown === false) {
         cell.isShown = true
         if(!cell.isMine){
             elCell.innerText = cell.minesAroundCount
@@ -194,5 +196,19 @@ function showCellsAround(board ,cellI ,cellJ) {
     }
 }
 
+
+
+function markCell(elCell, event, i, j) {
+    event.preventDefault();
+    var cell = gBoard[i][j]
+    if(cell.isShown) return;
+    if(!cell.isMarked){
+        cell.isMarked = true;
+        elCell.innerText = FLAG
+    } else {
+        cell.isMarked = false;
+        elCell.innerText = ''
+    }
+}
 
 

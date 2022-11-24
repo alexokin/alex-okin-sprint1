@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body onload="onInit()">
-    <h2>Minesweeper</h2>
-    <button onclick="startEasy()">easy</button>
-    <button onclick="startMedium()">medium</button>
-    <button onclick="startHard()">hard</button>
+    <h2 class="gametitle">MINESWEEPER</h2>
+    <div class="buttons">
+        <button onclick="startEasy()" class="btn-easy">easy</button>
+        <button onclick="startMedium()" class="btn-medium">medium</button>
+        <button onclick="startHard()" class="btn-hard">hard</button>
+    </div>
+    <div class="lifeleft"></div>
     <div class="timer">
         <div>
             <span id="hour">00</span>:<span id="minute">00</span>:<span id="second">00</span>:<span id="millisecond">000</span>
@@ -29,6 +32,6 @@
 
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
-    <footer>Made by Alex Okin</footer>
+    <footer class="footer">MADE BY ALEX OKIN</footer>
 </body>
 </html>

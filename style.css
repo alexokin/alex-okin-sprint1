@@ -1,14 +1,69 @@
 
 body {
-    background-color: rgb(152, 167, 255);
-    color:white;
-  }
+  font-family: fantasy;
+  background-color: #A7D2CB;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin:0;
+  padding:0;
+  height:100%
+}
 
+.gametitle {
+  color: #C98474;
+  font-size: 45px;
+}
 
-  .cell {
-    width: 40px;
-    height: 40px;
-    text-align: center;
-    font-size: 1.5em;
-    border: solid black 2px;
-  }
+.btn-easy {
+  font-family: fantasy;
+  background-color: #C98474;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+.btn-medium {
+  font-family: fantasy;
+  background-color: #C98474;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+.btn-hard {
+  font-family: fantasy;
+  background-color: #C98474;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.lifeleft {
+  margin-top: 10px;
+  color: #C98474;
+}
+.timer {
+  margin-top: 10px;
+  color: #C98474;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  font-size: 1.5em;
+  font-family: fantasy;
+  color: #C98474;
+  border: solid #874C62 5px;
+}
+
+.footer {
+  color: #C98474;
+  position:absolute;
+   bottom:0;
+   width:100%;
+   height:30px;   /* Height of the footer */
+   background:#F2D388;
+   text-align: center;
+  
+}
+
+.board-container {
+  border: solid #F2D388 10px;
+}

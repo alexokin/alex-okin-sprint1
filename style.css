@@ -1,7 +1,7 @@
 
 body {
   font-family: fantasy;
-  background-color: #A7D2CB;
+  background-color: #2EB086;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,59 +11,81 @@ body {
 }
 
 .gametitle {
-  color: #C98474;
-  font-size: 45px;
+  color: #313552;
+  font-size: 55px;
+  text-shadow: 2px 2px #EEE6CE;
 }
 
 .btn-easy {
+  border-color: #313552;
+  font-size: 20px;
+  border-radius: 4px;
+  color: #EEE6CE;
+  cursor: pointer;
   font-family: fantasy;
-  background-color: #C98474;
+  background-color: #B8405E;
   margin-left: 3px;
   margin-right: 3px;
 }
 .btn-medium {
+  border-color: #313552;
+  font-size: 20px;
+  border-radius: 4px;
+  color: #EEE6CE;
+  cursor: pointer;
   font-family: fantasy;
-  background-color: #C98474;
+  background-color: #B8405E;
   margin-left: 3px;
   margin-right: 3px;
 }
 .btn-hard {
+  border-color: #313552;
+  font-size: 20px;
+  border-radius: 4px;
+  color: #EEE6CE;
+  cursor: pointer;
   font-family: fantasy;
-  background-color: #C98474;
+  background-color: #B8405E;
   margin-left: 3px;
   margin-right: 3px;
 }
 
+.emoji {
+  font-size: 30px;
+  cursor: pointer;
+}
+
 .lifeleft {
   margin-top: 10px;
-  color: #C98474;
+  color: #313552;
 }
 .timer {
   margin-top: 10px;
-  color: #C98474;
+  color: #313552;
 }
 
 .cell {
-  width: 40px;
-  height: 40px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
   text-align: center;
   font-size: 1.5em;
   font-family: fantasy;
-  color: #C98474;
-  border: solid #874C62 5px;
+  color: #EEE6CE;
+  border: solid #B8405E 5px;
 }
 
 .footer {
-  color: #C98474;
+  color: #313552;
   position:absolute;
    bottom:0;
    width:100%;
-   height:30px;   /* Height of the footer */
-   background:#F2D388;
+   height:25px;   /* Height of the footer */
+   background:#EEE6CE;
    text-align: center;
   
 }
 
 .board-container {
-  border: solid #F2D388 10px;
+  border: solid #EEE6CE 10px;
 }

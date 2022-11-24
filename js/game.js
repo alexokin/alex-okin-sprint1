@@ -28,7 +28,10 @@ var gGame = {
     shownCount: 0,
     markedCount: 0,
     lifeCount: gChosenLevel.life,
-    secsPassed: 0
+    numOfMinesExp: 0,
+    flags: gChosenLevel.mines,
+    secsPassed: 0,
+    firstClick: true
 }
 
 var gTimerInterval
@@ -66,14 +69,22 @@ function onInit() {
         shownCount: 0,
         markedCount: 0,
         lifeCount: gChosenLevel.life,
-        secsPassed: 0
+        flags: gChosenLevel.mines,
+        numOfMinesExp: 0,
+        secsPassed: 0,
+        firstClick: true
     }
-    gGame.isOn = true
+
+
+    gGame.isOn = true;
+    gGame.firstClick = true;
     resetTimer()
     gBoard = buildBoard(gChosenLevel.size)
-    mineGenerator(gBoard)
-    setMinesNegsCount(gBoard)
+    
+    // mineGenerator(gBoard)
+    // setMinesNegsCount(gBoard)
     showLifeLeft()
+    eMoji(NORMAL)
     renderBoard(gBoard, '.board-container')
     console.log('gBoard', gBoard)
 
@@ -108,16 +119,14 @@ function buildBoard(size) {
     return board
 }
 
-function renderBoard(mat, selector) {
+function renderBoard(mat, selector, cellI, cellJ) {
     
     var strHTML = '<table border="0" class=`table`><tbody>'
     for (var i = 0; i < mat.length; i++) {
 
         strHTML += '<tr>'
         for (var j = 0; j < mat[0].length; j++) {
-            // var mine = (mat[i][j].isShown && mat[i][j].isMine)? MINE : ``;
 
-            // var mineImg = (mat[i][j].isMine) ? '<img src="img/mine2.png">' : '';
             const cell = ''
             const className = `cell cell-${i}-${j}`
 
@@ -129,6 +138,34 @@ function renderBoard(mat, selector) {
 
     const elTable = document.querySelector(selector)
     elTable.innerHTML = strHTML
+}
+
+var NORMAL = 'normal';
+var BOOM = 'boom';
+var GAME_OVER = 'game over';
+var WINNER = 'winner';
+
+function eMoji(gameStatus = 'normal') {
+    var elEmoji = document.querySelector('.emoji');
+    switch (gameStatus) {
+        case 'normal':
+            elEmoji.innerText = `😄`
+            break;
+        case 'boom':
+            elEmoji.innerText = `💥`
+            break;
+        case 'game over':
+            elEmoji.innerText = `💀`
+            break;
+
+        case 'winner':
+            elEmoji.innerText = `👑`
+            break;
+
+        default:
+            elEmoji.innerText = `😄`
+            break;
+    }
 }
 
 
@@ -157,33 +194,51 @@ function countMinesAround(cellI, cellJ, board) {
 
 // Called when a cell (td) is clicked
 function cellClicked(elCell, i, j) {
-    if(!gGame.isOn) return
-    if(!gGame.markedCount > gChosenLevel.mines) return
-    startTimer()
     var cell = gBoard[i][j]
+
+    if(gGame.firstClick){
+        gGame.firstClick = false;
+        // cell.isShown = true;
+        mineGenerator(gBoard, i, j);
+        setMinesNegsCount(gBoard);
+        elCell.innerText = cell.minesAroundCount
+        cell.isShown = true;
+        gGame.shownCount++
+        // renderBoard(gBoard, '.board-container')
+        
+    }
+    if(!gGame.isOn) return
+    // if(!gGame.markedCount > gChosenLevel.mines) return
     if (cell.isMarked) return
+    
+    startTimer()
     if (cell.isShown === false) {
         cell.isShown = true
-        gGame.shownCount++
-        console.log('gGame.shownCount', gGame.shownCount)
-        if(!cell.isMine){
+        if (!cell.isMine){
             elCell.innerText = cell.minesAroundCount
+            gGame.shownCount++
         }
-        if(cell.isMine) {
+        if (cell.isMine) {
             elCell.innerText = MINE
             // showAllMines()
             // clearInterval(gTimerInterval)
+            gGame.shownCount++
+            gGame.numOfMinesExp++
             gGame.lifeCount--
             showLifeLeft()
             console.log(`You stepped on a mine. ${gGame.lifeCount} lives left.`)
         }
-        if(cell.minesAroundCount === 0 && !cell.isMine) {
-            console.log('hello')
-            console.log('cell', cell)
+        if (cell.minesAroundCount === 0 && !cell.isMine) {
+            // console.log('hello')
+            // console.log('cell', cell)
             showCellsAround(gBoard, i, j)
         }
     }
+    console.log('gGame.shownCount', gGame.shownCount);
+    console.log('gGame.markedCount', gGame.markedCount);
+    console.log('gGame.numOfMinesExp', gGame.numOfMinesExp)
     checkGameOver()
+    
 
 }
 // timer functions taken from the internet.
@@ -246,12 +301,16 @@ function showCellsAround(board ,cellI ,cellJ) {
 function markCell(elCell, event, i, j) {
     event.preventDefault();
     var cell = gBoard[i][j]
+    if(cell.firstClick) return;
     if(cell.isShown) return;
-    if(!cell.isMarked){
+    if(!cell.isMarked && gGame.flags !== 0){
+        gGame.flags--
+        console.log('gGame.flags', gGame.flags)
         cell.isMarked = true;
         gGame.markedCount++
         console.log('markedCount', gGame.markedCount)
         elCell.innerText = FLAG
+        checkIfMarkedCellIsMine(cell)
     } else {
         cell.isMarked = false;
         elCell.innerText = ''
@@ -272,6 +331,7 @@ function showAllMines(gBoard) {
         
     }
 }
+
 function gameOverLost() {
     gGame.isOn = false;
     console.log('YOU LOSE, GAME OVER')
@@ -292,8 +352,10 @@ function checkGameOver() {
     if (gGame.lifeCount <= 0) {
         console.log('YOU LOST!');
         gameOverLost()
-    } else if (gGame.shownCount + gGame.markedCount === gBoard.length ** 2) {
+    } else if (gGame.shownCount + gGame.markedCount === gBoard.length ** 2 
+        && gGame.markedCount + gGame.numOfMinesExp === gChosenLevel.mines) {
         console.log('WINNER');
+        eMoji(WINNER)
         gameOver()
     }
 }
@@ -303,15 +365,30 @@ function showLifeLeft() {
     elLifeDiv.innerText = `${gGame.lifeCount} LIVES LEFT`
 }
 
-function mineGenerator(gBoard) {
+function mineGenerator(gBoard, i, j) {
+    var idxI = i;
+    var idxJ = j;
     var mineCount = 0
-    for (var i = 0; i < gChosenLevel.mines; i++) {
+
+    while (mineCount !== gChosenLevel.mines){
         var cellI = getRandomIntInclusive(0, gChosenLevel.size - 1)
         var cellJ = getRandomIntInclusive(0, gChosenLevel.size - 1)
+        if(cellI === idxI && cellJ === idxJ) continue;
         var cell = gBoard[cellI][cellJ]
         cell.isMine = true 
         mineCount++
     }
+
     console.log('mineCount', mineCount)
 }
+
+function checkIfMarkedCellIsMine(cell) {
+    if (cell.isMine && cell.isShown) {
+        gGame.lifeCount--;
+        gGame.numOfMinesExp++;
+        eMoji(BOOM)
+    }
+    checkGameOver();
+}
+
 

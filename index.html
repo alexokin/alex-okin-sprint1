@@ -10,13 +10,15 @@
 <body onload="onInit()">
     <h2 class="gametitle">MINESWEEPER</h2>
     <div class="buttons">
-        <button onclick="startEasy()" class="btn-easy">easy</button>
-        <button onclick="startMedium()" class="btn-medium">medium</button>
-        <button onclick="startHard()" class="btn-hard">hard</button>
+        <button onclick="startEasy()" class="btn-easy">EASY</button>
+        <button onclick="startMedium()" class="btn-medium">MEDIUM</button>
+        <button onclick="startHard()" class="btn-hard">HARD</button>
     </div>
+    <div class="emoji" onclick="onInit()"></div>
     <div class="lifeleft"></div>
+    <div class="flagsleft"></div>
     <div class="timer">
-        <div>
+        <div class="timespan">
             <span id="hour">00</span>:<span id="minute">00</span>:<span id="second">00</span>:<span id="millisecond">000</span>
         </div>
         

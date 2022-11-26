@@ -7,7 +7,8 @@ body {
   align-items: center;
   margin:0;
   padding:0;
-  height:100%
+  justify-content: space-around;
+  min-height: 100vh;
 }
 
 .gametitle {
@@ -77,15 +78,18 @@ body {
 
 .footer {
   color: #313552;
-  position:absolute;
+  position:relative;
    bottom:0;
    width:100%;
    height:25px;   /* Height of the footer */
    background:#EEE6CE;
    text-align: center;
+   margin-top: 10px;
   
 }
 
 .board-container {
   border: solid #EEE6CE 10px;
+  margin-bottom: auto;
+  
 }

@@ -13,7 +13,7 @@ const FLAG = '🚩'
 var gBoard = []
 
 var gLevel = [
-    {size: 4, mines: 2 , life: 2},
+    {size: 4, mines: 3 , life: 2},
     {size: 8, mines: 14, life: 3},
     {size: 12, mines: 32, life: 3},
 ]
@@ -140,34 +140,6 @@ function renderBoard(mat, selector, cellI, cellJ) {
     elTable.innerHTML = strHTML
 }
 
-var NORMAL = 'normal';
-var BOOM = 'boom';
-var GAME_OVER = 'game over';
-var WINNER = 'winner';
-
-function eMoji(gameStatus = 'normal') {
-    var elEmoji = document.querySelector('.emoji');
-    switch (gameStatus) {
-        case 'normal':
-            elEmoji.innerText = `😄`
-            break;
-        case 'boom':
-            elEmoji.innerText = `💥`
-            break;
-        case 'game over':
-            elEmoji.innerText = `💀`
-            break;
-
-        case 'winner':
-            elEmoji.innerText = `👑`
-            break;
-
-        default:
-            elEmoji.innerText = `😄`
-            break;
-    }
-}
-
 
 function setMinesNegsCount(board) {
     for (var i = 0; i < board.length; i++) {
@@ -198,12 +170,23 @@ function cellClicked(elCell, i, j) {
 
     if(gGame.firstClick){
         gGame.firstClick = false;
+        cell.isShown = true;
+        gGame.shownCount++
         // cell.isShown = true;
         mineGenerator(gBoard, i, j);
         setMinesNegsCount(gBoard);
-        elCell.innerText = cell.minesAroundCount
-        cell.isShown = true;
-        gGame.shownCount++
+        if (!cell.minesAroundCount) {
+            elCell.innerText = ''
+            elCell.style.backgroundColor = '#B8405E'
+            showCellsAround(gBoard, i, j);
+            // cell.isShown = true;
+            // gGame.shownCount++
+        } else {
+            elCell.innerText = cell.minesAroundCount
+            // cell.isShown = true;
+            // gGame.shownCount++
+        }
+        
         // renderBoard(gBoard, '.board-container')
         
     }
@@ -215,10 +198,16 @@ function cellClicked(elCell, i, j) {
     if (cell.isShown === false) {
         cell.isShown = true
         if (!cell.isMine){
-            elCell.innerText = cell.minesAroundCount
-            gGame.shownCount++
+            if (!cell.minesAroundCount) {
+                elCell.innerText = ''
+                elCell.style.backgroundColor = '#B8405E'
+            } else {
+                elCell.innerText = cell.minesAroundCount
+                gGame.shownCount++
+            }
         }
         if (cell.isMine) {
+            eMoji(BOOM)
             elCell.innerText = MINE
             // showAllMines()
             // clearInterval(gTimerInterval)
@@ -229,11 +218,11 @@ function cellClicked(elCell, i, j) {
             console.log(`You stepped on a mine. ${gGame.lifeCount} lives left.`)
         }
         if (cell.minesAroundCount === 0 && !cell.isMine) {
-            // console.log('hello')
-            // console.log('cell', cell)
+            gGame.shownCount++
             showCellsAround(gBoard, i, j)
         }
     }
+    console.log('-----')
     console.log('gGame.shownCount', gGame.shownCount);
     console.log('gGame.markedCount', gGame.markedCount);
     console.log('gGame.numOfMinesExp', gGame.numOfMinesExp)
@@ -291,8 +280,15 @@ function showCellsAround(board ,cellI ,cellJ) {
             if (board[i][j].isShown === false) {
                 board[i][j].isShown = true;
                 gGame.shownCount++
-                var elCell = document.querySelector(`.cell-${i}-${j}`);
-                elCell.innerText = board[i][j].minesAroundCount;
+                if(board[i][j].minesAroundCount === 0) {
+                    var elCell = document.querySelector(`.cell-${i}-${j}`);
+                    elCell.innerText = '';
+                    elCell.style.backgroundColor = "#B8405E";
+                    showCellsAround(board, i, j)
+                } else {
+                    var elCell = document.querySelector(`.cell-${i}-${j}`);
+                    elCell.innerText = board[i][j].minesAroundCount;
+                }
             }; // Change this line accordingly.
         }
     }
@@ -305,13 +301,14 @@ function markCell(elCell, event, i, j) {
     if(cell.isShown) return;
     if(!cell.isMarked && gGame.flags !== 0){
         gGame.flags--
-        console.log('gGame.flags', gGame.flags)
+        // console.log('gGame.flags', gGame.flags)
         cell.isMarked = true;
         gGame.markedCount++
-        console.log('markedCount', gGame.markedCount)
+        // console.log('markedCount', gGame.markedCount)
         elCell.innerText = FLAG
         checkIfMarkedCellIsMine(cell)
     } else {
+        gGame.flags++
         cell.isMarked = false;
         elCell.innerText = ''
         gGame.markedCount--
@@ -324,6 +321,7 @@ function showAllMines(gBoard) {
             var cell = gBoard[i][j];
             if(cell.isMine && !cell.isShown){
                 cell.isShown = true
+                gGame.shownCount++
                 var elCell = document.querySelector(`.cell-${i}-${j}`)
                 elCell.innerText = MINE
             }
@@ -334,16 +332,15 @@ function showAllMines(gBoard) {
 
 function gameOverLost() {
     gGame.isOn = false;
-    console.log('YOU LOSE, GAME OVER')
     showAllMines(gBoard)
     // renderBoard(gBoard, '.board-container')
     clearInterval(gTimerInterval)
+    eMoji(GAME_OVER)
 }
 
 function gameOver() {
     gGame.isOn = false;
     // showAllMines()
-    console.log('GAMEOVER');
     renderBoard(gBoard, '.board-container')
     clearInterval(gTimerInterval)
 }
@@ -365,18 +362,49 @@ function showLifeLeft() {
     elLifeDiv.innerText = `${gGame.lifeCount} LIVES LEFT`
 }
 
-function mineGenerator(gBoard, i, j) {
-    var idxI = i;
-    var idxJ = j;
-    var mineCount = 0
+var NORMAL = 'normal';
+var BOOM = 'boom';
+var GAME_OVER = 'game over';
+var WINNER = 'winner';
 
-    while (mineCount !== gChosenLevel.mines){
+function eMoji(gameStatus = 'normal') {
+    var elEmoji = document.querySelector('.emoji');
+    switch (gameStatus) {
+        case 'normal':
+            elEmoji.innerText = `😄`
+            break;
+        case 'boom':
+            elEmoji.innerText = `😟`
+            break;
+        case 'game over':
+            elEmoji.innerText = `💀`
+            break;
+        case 'winner':
+            elEmoji.innerText = `👑`
+            break;
+        default:
+            elEmoji.innerText = `😄`
+            break;
+    }
+}
+// function showFlagsLeft() {
+//     var elFlag = document.querySelector('.flagsleft');
+//     elFlag.innerText = `${gGame.}`
+// }
+
+function mineGenerator(gBoard, i, j) {
+    // var idxI = i;
+    // var idxJ = j;
+    var mineCount = gChosenLevel.mines
+
+    while (mineCount !== 0){
         var cellI = getRandomIntInclusive(0, gChosenLevel.size - 1)
         var cellJ = getRandomIntInclusive(0, gChosenLevel.size - 1)
-        if(cellI === idxI && cellJ === idxJ) continue;
+        if(gBoard[cellI][cellJ].isMine) continue;
+        if(cellI === i && cellJ === j) continue;
         var cell = gBoard[cellI][cellJ]
         cell.isMine = true 
-        mineCount++
+        mineCount--
     }
 
     console.log('mineCount', mineCount)
@@ -386,7 +414,6 @@ function checkIfMarkedCellIsMine(cell) {
     if (cell.isMine && cell.isShown) {
         gGame.lifeCount--;
         gGame.numOfMinesExp++;
-        eMoji(BOOM)
     }
     checkGameOver();
 }

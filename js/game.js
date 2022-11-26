@@ -167,7 +167,7 @@ function countMinesAround(cellI, cellJ, board) {
 // Called when a cell (td) is clicked
 function cellClicked(elCell, i, j) {
     var cell = gBoard[i][j]
-
+    
     if(gGame.firstClick){
         gGame.firstClick = false;
         cell.isShown = true;
